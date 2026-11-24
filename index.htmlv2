@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irfan Quotex Signal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: white; margin: 0; padding: 20px; }
+        .header { text-align: center; color: #00ffcc; }
+        .container { display: flex; gap: 20px; margin-top: 20px; }
+        .chart-box { flex: 2; height: 600px; background: #1e1e1e; border-radius: 10px; overflow: hidden; }
+        .signal-box { flex: 1; background: #1e1e1e; padding: 20px; border-radius: 10px; border: 1px solid #333; }
+        .signal-up { color: #00ff00; font-size: 24px; font-weight: bold; }
+        .signal-down { color: #ff0000; font-size: 24px; font-weight: bold; }
+        .signal-wait { color: #ffcc00; font-size: 24px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 8px; text-align: center; font-size: 14px;}
+        th { background-color: #333; }
+    </style>
+</head>
+<body>
+
+    <h1 class="header">🤖 Irfan Quotex Signal</h1>
+    <p style="text-align: center;">Live Market Analysis & Pattern Recognition</p>
+
+    <div class="container">
+        <!-- TradingView Chart -->
+        <div class="chart-box">
+            <div id="tradingview_12345" style="height: 100%;"></div>
+        </div>
+
+        <!-- Signal Panel -->
+        <div class="signal-box">
+            <h3>Current Signal</h3>
+            <h2 id="pair-name">EUR/USD</h2>
+            
+            <label>Select Timeframe:</label>
+            <select id="timeframe" style="width: 100%; padding: 5px; margin-top: 5px; margin-bottom: 15px;">
+                <option value="30s">30 Seconds</option>
+                <option value="1m">1 Minute</option>
+                <option value="2m">2 Minutes</option>
+                <option value="3m">3 Minutes</option>
+                <option value="5m" selected>5 Minutes</option>
+                <option value="10m">10 Minutes</option>
+                <option value="20m">20 Minutes</option>
+                <option value="30m">30 Minutes</option>
+                <option value="1h">1 Hour</option>
+            </select>
+
+            <div style="background: #000; padding: 15px; border-radius: 8px; text-align: center; border: 1px dashed #555;">
+                <p style="margin: 0; color: #aaa;">Bot Analysis:</p>
+                <!-- Yeh signal backend se aayega -->
+                <div id="signal-output" class="signal-wait">WAIT</div>
+                <p id="pattern-name" style="font-size: 12px; color: #888;">Waiting for next candle...</p>
+                <p id="signal-time" style="font-size: 12px; color: #888;"></p>
+            </div>
+            
+            <h4 style="margin-top: 20px;">Signal History (Win/Loss)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Signal</th>
+                        <th>Pattern</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table">
+                    <!-- Table rows will be added by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TradingView Library -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        // TradingView Chart Setup
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "FX:EURUSD", // Yahan Quotex ka pair change karein
+            "interval": "5",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_12345"
+        });
+
+        // --- SIMULATING BACKEND SIGNAL (Frontend Demo) ---
+        // Real app mein aap yahan Python backend se API call karenge.
+        function simulateSignal() {
+            const signals = [
+                { type: "UP (BUY)", class: "signal-up", pattern: "Hammer Pattern" },
+                { type: "DOWN (SELL)", class: "signal-down", pattern: "Shooting Star" },
+                { type: "WAIT", class: "signal-wait", pattern: "Analyzing..." },
+                { type: "UP (BUY)", class: "signal-up", pattern: "Bullish Engulfing" }
+            ];
+            
+            // Randomly select a signal for demo
+            const randomSignal = signals[Math.floor(Math.random() * signals.length)];
+            
+            document.getElementById('signal-output').innerText = randomSignal.type;
+            document.getElementById('signal-output').className = randomSignal.class;
+            document.getElementById('pattern-name').innerText = randomSignal.pattern;
+            document.getElementById('signal-time').innerText = "Time: " + new Date().toLocaleTimeString();
+
+            // Add to history table if not WAIT
+            if(randomSignal.type !== "WAIT") {
+                const table = document.getElementById('history-table');
+                const row = table.insertRow(0);
+                row.innerHTML = `
+                    <td>${new Date().toLocaleTimeString()}</td>
+                    <td style="color: ${randomSignal.type.includes('UP') ? '#00ff00' : '#ff0000'}">${randomSignal.type}</td>
+                    <td>${randomSignal.pattern}</td>
+                    <td>Pending</td>
+                `;
+            }
+        }
+
+        // Har 10 second baad signal update karega (Demo ke liye)
+        setInterval(simulateSignal, 10000);
+    </script>
+</body>
+</html>
